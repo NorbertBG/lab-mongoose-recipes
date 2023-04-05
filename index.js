@@ -17,7 +17,38 @@ mongoose
   })
   .then(() => {
     // Run your code here, after you have insured that the connection was made
+    const firstRecipe = {title: "Omelette", level: "Easy Peasy", ingredients: ["eggs", "oil", "salt", "pepper"], cuisine: "french", dishType: "breakfast", duration: 4, creator: "Norbert" }
+    Recipe.create(firstRecipe)
+      .then(Recipe => console.log("The recipe is saved, and the title is:", Recipe.title))
+      .catch(error => console.log ('An error happened while saving a new recipe:', error))
+
+    return Recipe.insertMany(data)
+      .then(data => {
+         data.forEach( element => {
+          console.log("All documents have been inserted and their titles are:", element.title)
+          })
+        })
+      
+      .catch(error => console.log("An error happened while saving all the recipies", error))
   })
+  
+  .then (()=>{
+    Recipe.findOneAndUpdate({title: "Rigatoni alla Genovese"}, {duration: 100})
+    .then( () => console.log("Updated"))
+  })
+
+  .then (() => {
+    Recipe.deleteOne({title: "Carrot Cake"})
+      .then( () => console.log("deleted"))
+  })
+
   .catch(error => {
     console.error('Error connecting to the database', error);
+  });
+
+  process.on('SIGINT', () => {
+    mongoose.connection.close().then(() => {
+      console.log('Mongoose default connection disconnected through app termination');
+      process.exit(0);
+    });
   });
